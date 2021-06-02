@@ -68,8 +68,8 @@ if __name__=='__main__':
     # txt_path= '/media/hkuit104/24d4ed16-ee67-4121-8359-66a09cede5e7/AbnormalDetection/DATASET/UCF-crime/Anomaly_Train.txt'
     video_dir='/media/hkuit104/24d4ed16-ee67-4121-8359-66a09cede5e7/AbnormalDetection/DATASET/SHT/training/videos/'
     video_dir_frame = '/media/hkuit104/24d4ed16-ee67-4121-8359-66a09cede5e7/AbnormalDetection/DATASET/SHT/testing/frames/'
-    h5_file_path='../data/SHT-Train-16.h5'
-    txt_path= '../data/SH_Train_new.txt'
+    h5_file_path='../data/SHT-Test-16.h5'
+    txt_path= '../data/SH_Test_NEW.txt'
     train_list=[]
     with open(txt_path,'r')as f:
         paths=f.readlines()

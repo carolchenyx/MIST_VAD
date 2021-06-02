@@ -18,7 +18,7 @@ import cv2
 
 _C=constant._C
 
-def load_C3D_SGA_STD_pretrained_model(net, checkpoint_path, name=None):
+def load_SGA_STD_pretrained_model(net, checkpoint_path, name=None):
     checkpoint = torch.load(checkpoint_path)
     state_dict = net.state_dict()
     base_dict = {}
@@ -44,22 +44,22 @@ def load_model_dataset(args):
     if args.MODEL.split('_')[-1]=='C3D':
         if args.MODEL=='UCF_C3D':
             dataset=Test_Dataset_C3D(_C.TEST_H5_PATH,_C.TESTING_TXT_PATH,args.segment_len,args.ten_crop)
-            load_C3D_SGA_STD_pretrained_model(model,_C.UCF_C3D_MODEL_PATH)
+            load_SGA_STD_pretrained_model(model,_C.UCF_C3D_MODEL_PATH)
             # model.load_state_dict(torch.load(_C.UCF_C3D_MODEL_PATH)['model'])#['state_dict']
         else:
             dataset=Test_Dataset_SHT_C3D(_C.SHT_TEST_H5_PATH,_C.SHT_TEST_TXT_PATH,_C.SHT_TEST_MASK_DIR,
                                          args.segment_len,args.ten_crop)
-            model.load_state_dict(torch.load(_C.SHT_C3D_MODEL_PATH)['state_dict'])
+            load_SGA_STD_pretrained_model(model,_C.SHT_C3D_MODEL_PATH)
         dataloader=DataLoader(dataset,batch_size=args.batch_size,shuffle=False,num_workers=10,
                               worker_init_fn=worker_init,drop_last=False)
     else:
         if args.MODEL=='UCF_I3D':
             dataset=Test_Dataset_I3D(_C.TEST_H5_PATH,_C.TESTING_TXT_PATH,args.segment_len,args.ten_crop)
-            model.load_state_dict(torch.load(_C.UCF_I3D_MODEL_PATH)['state_dict'])
+            load_SGA_STD_pretrained_model(model,_C.UCF_I3D_MODEL_PATH)
         else:
             dataset=Test_Dataset_SHT_I3D(_C.SHT_TEST_H5_PATH,_C.SHT_TEST_TXT_PATH,_C.SHT_TEST_MASK_DIR,
                                          args.segment_len,args.ten_crop)
-            model.load_state_dict(torch.load(_C.SHT_I3D_MODEL_PATH)['state_dict'])
+            load_SGA_STD_pretrained_model(model,_C.SHT_I3D_MODEL_PATH)
         dataloader=DataLoader(dataset,batch_size=args.batch_size,shuffle=False,num_workers=5,
                               worker_init_fn=worker_init,drop_last=False)
     return model,dataloader
@@ -112,7 +112,7 @@ def eval_UCF(args,model,test_dataloader):
 
 def eval_SHT(model,test_dataloader):
     total_labels, total_scores = [], []
-    for frames,_,_,_,annos in test_dataloader:
+    for frames,_,_,annos in test_dataloader:
         frames=frames.float().contiguous().view([-1, 3, frames.shape[-3], frames.shape[-2], frames.shape[-1]]).cuda()
         with torch.no_grad():
             scores, feat_maps = model(frames)[:2]

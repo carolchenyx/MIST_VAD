@@ -17,14 +17,14 @@ _C.C3D_MODEL_PATH='pretrained/C3D_Sport1M/pth'
 _C.UCF_C3D_MODEL_PATH='../ckpts/UCF_C3D_AUC_0.8143.pth'
 _C.UCF_I3D_MODEL_PATH='../ckpts/UCF_I3D_AUC_0.8230.pth'
 _C.SHT_C3D_MODEL_PATH='../ckpts/SHT_C3D_AUC_0.9313.pth'
-_C.STH_I3D_MODEL_PATH='../ckpts/SHT_I3D_AUC_0.9483.pth'
+_C.SHT_I3D_MODEL_PATH='../ckpts/SHT_I3D_AUC_0.9483.pth'
 
 ## Vis Paths
 _C.VIS_DIR='outputs/'
 _C.TEST_SPATIAL_ANNOTATION_PATH='../data/Test_Spatial_Annotation.npy'
 ############ 2. UCF Data ###########################
-_C.TRAIN_H5_PATH='../data/UCFCrime-Frames.h5'
-_C.TEST_H5_PATH='../data/UCFCrime-Test-16.h5'
+_C.TRAIN_H5_PATH='../data/UCF-Train-16.h5'
+_C.TEST_H5_PATH='../data/UCF-Test-16.h5'
 _C.TESTING_TXT_PATH='../data/Temporal_Anomaly_Annotation_New.txt'
 
 ############# 3. SHT Data ##########################
