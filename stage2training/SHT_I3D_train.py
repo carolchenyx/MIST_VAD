@@ -29,7 +29,7 @@ def get_optimizer(args,model):
 def get_model_optimizer(args,CFG):
     model=I3D_SGA_STD(args.dropout_rate,args.expand_k,
                                 freeze_backbone=not (args.train_backbone), freeze_blocks=args.freeze_blocks,freeze_bn=not(args.train_bn),
-                                 pretrained_backbone=args.pretrained_backbone,pretrained_path=args.machine+CFG.I3D_MODEL_PATH,
+                                 pretrained_backbone=args.pretrained_backbone,pretrained_path=CFG.I3D_MODEL_PATH,
                                  freeze_bn_statics=args.freeze_bn_sta).cuda()
 
     optimizer=get_optimizer(args,model)
@@ -39,7 +39,7 @@ def get_model_optimizer(args,CFG):
     amp.register_float_function(torch,'softmax')
     amp.register_float_function(torch,'sigmoid')
     model,optimizer=amp.initialize(model,optimizer,opt_level=opt_level,keep_batchnorm_fp32=None)
-    model=BalancedDataParallel(int(args.batch_size*2*args.clip_num/len(args.gpus)*args.gpu0sz),model,dim=0,device_ids=args.gpus)
+    # model=BalancedDataParallel(int(args.batch_size*2*args.clip_num/len(args.gpus)*args.gpu0sz),model,dim=0,device_ids=args.gpus)
 
     return model,optimizer
 
@@ -69,7 +69,7 @@ def prepare_dataset(args):
 
     test_dataset = Test_Dataset_SHT_I3D(CFG.SHT_TEST_H5_PATH, CFG.SHT_TEST_TXT_PATH,CFG.SHT_TEST_MASK_DIR,
                                         args.segment_len, ten_crop=args.ten_crop)
-    test_dataloader = DataLoader(test_dataset, batch_size=42, shuffle=False, num_workers=10,
+    test_dataloader = DataLoader(test_dataset, batch_size=2, shuffle=False, num_workers=10,
                                   worker_init_fn=worker_init, drop_last=False, )
     return norm_dataloader,abnorm_dataloader,test_dataloader
 
@@ -159,7 +159,8 @@ def trainer(args):
     model,optimizer=get_model_optimizer(args,CFG)
     model=model.cuda().train()
 
-    for name,p in model.module.named_parameters():
+    # for name,p in model.module.named_parameters():
+    for name, p in model.named_parameters():
         if p.requires_grad:
             logger.info(name)
 

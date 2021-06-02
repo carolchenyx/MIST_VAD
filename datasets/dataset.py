@@ -372,8 +372,12 @@ class Test_Dataset_SHT_I3D(Dataset):
             self.annotation_dict[key]=[anno,label]
         # key_dict={}
         for key in keys:
-            if key.split('-')[0] in self.annotation_dict.keys():
-                self.keys.append(key)
+            if 'Normal' in key:
+                if key.split('-')[0][7:] in self.annotation_dict.keys():
+                    self.keys.append(key)
+            else:
+                if key.split('-')[0] in self.annotation_dict.keys():
+                    self.keys.append(key)
         #         if key.split('-')[0] in key_dict.keys():
         #             key_dict[key.split('-')[0]]+=1
         #         else:
@@ -502,11 +506,11 @@ class Train_TemAug_Dataset_SHT_I3D(Dataset):
                             self.abnorm_vid_names_dict[key]=1
             else:
                 for k in self.keys:
-                    if key in k.split('-')[0]:
+                    if key == k.split('-')[0][7:]:
                         if key in self.norm_vid_names_dict.keys():
                             self.norm_vid_names_dict[key]+=1
                         else:
-                            self.norm_vid_names_dict[key]=1
+                            self.norm_vid_names_dict['Normal_'+key]=1
 
     def frame_processing(self,frames):
         new_frames = []
@@ -525,8 +529,12 @@ class Train_TemAug_Dataset_SHT_I3D(Dataset):
         # import pdb
         # pdb.set_trace()
         key = self.selected_keys[i]
-        scores = self.pseudo_labels[key + '.npy']
-        vid_len=self.selected_dict[key]
+        if 'Normal' in key:
+            scores = self.pseudo_labels[key.split('-')[0][7:] + '.npy']
+            vid_len = self.selected_dict[key]
+        else:
+            scores = self.pseudo_labels[key + '.npy']
+            vid_len=self.selected_dict[key]
         if not self.continuous_sampling:
             chosens = random_perturb(vid_len-1, self.clip_num)
         else:

@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument('--continuous_sampling',dest='use_continuous_sampling',action='store_true')
     parser.set_defaults(use_continuous_sampling=False)
 
-    parser.add_argument('--batch_size',type=int,default=2)
+    parser.add_argument('--batch_size',type=int,default=1)
     parser.add_argument('--clip_num',type=int,default=3)
     parser.add_argument('--epochs',type=int,default=301)
     parser.add_argument('--accumulate_step',type=int,default=3)
@@ -33,19 +33,15 @@ def parse_args():
     parser.set_defaults(freeze_bn_sta=True)
     parser.add_argument('--freeze_bn',dest='train_bn',action='store_false')
     parser.set_defaults(train_bn=True)
-
     parser.add_argument('--freeze_backbone',dest='train_backbone',action='store_false')
     parser.set_defaults(train_backbone=True)
     parser.add_argument('--freeze_blocks',type=str,default='conv3d_1a_7x7,conv3d_2b_1x1,conv3d_2c_3x3,mixed_3b,mixed_3c,mixed_4b,mixed_4c,mixed_4d,mixed_4e,mixed_4f,mixed_5b,mixed_5c')
-    parser.add_argument('--pretrained_path',type=str,default='/jiachang/Weakly_Supervised_VAD/stored_models/SHT_I3D_TD_epoch_420_AUC_0.90285.pth')
-
+    parser.add_argument('--pretrained_path',type=str,default='../ckpts/SHT_I3D_AUC_0.9483.pth')
     parser.add_argument('--train_all',dest='pretrained_backbone',action='store_false')
     parser.set_defaults(pretrained_backbone=True)
     parser.add_argument('--freeze_epochs',type=int,default=30)
     parser.add_argument('--freeze_bn_epochs',type=int,default=30)
-
     parser.add_argument('--segment_len',type=int,default=16)
-
     parser.add_argument('--gpus',type=str,default='0')
     parser.add_argument('--gpu0sz',type=float,default=0.8)
 
@@ -55,7 +51,6 @@ def parse_args():
     # loss balance hypermeters
     parser.add_argument('--lambda_atten',type=float,default=1.0)
     parser.add_argument('--lambda_base',type=float,default=1.0)
-
     parser.add_argument('--class_reweights',type=str,default='0.8,0.65')
 
     # threshold for iou calculate
