@@ -1,6 +1,7 @@
 import math
 import os
 import torch
+from torch import nn
 import numpy as np
 from models.Attention import Self_Guided_Attention_Branch_Module
 

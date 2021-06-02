@@ -2,6 +2,11 @@ import argparse
 import os
 def parse_args():
     parser=argparse.ArgumentParser()
+    parser.add_argument('--MODEL',type=str,default='SHT_I3D',
+                        help='the input should be in [UCF_C3D,UCF_I3D,SHT_C3D,SHT_I3D]')
+    parser.add_argument('--train', type=str, default=True )
+    parser.add_argument('--iter', type=int, default=10000)
+
     parser.add_argument('--expand_k',type=int,default=8)
     parser.add_argument('--label_smoothing',type=float,default=0)
     parser.add_argument('--hard_label',dest='use_hard_label',action='store_true')
@@ -9,7 +14,7 @@ def parse_args():
     parser.add_argument('--continuous_sampling',dest='use_continuous_sampling',action='store_true')
     parser.set_defaults(use_continuous_sampling=False)
 
-    parser.add_argument('--batch_size',type=int,default=10)
+    parser.add_argument('--batch_size',type=int,default=2)
     parser.add_argument('--clip_num',type=int,default=3)
     parser.add_argument('--epochs',type=int,default=301)
     parser.add_argument('--accumulate_step',type=int,default=3)
@@ -41,7 +46,7 @@ def parse_args():
 
     parser.add_argument('--segment_len',type=int,default=16)
 
-    parser.add_argument('--gpus',type=str,default='0,1,2')
+    parser.add_argument('--gpus',type=str,default='0')
     parser.add_argument('--gpu0sz',type=float,default=0.8)
 
     # for test time augmetation

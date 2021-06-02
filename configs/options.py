@@ -5,8 +5,9 @@ def parse_args():
     parser=argparse.ArgumentParser()
     parser.add_argument('--MODEL',type=str,default='SHT_I3D',
                         help='the input should be in [UCF_C3D,UCF_I3D,SHT_C3D,SHT_I3D]')
-    parser.add_argument('--expand_k',type=int,default=8)
+    parser.add_argument('--train', type=int, default=8)
 
+    parser.add_argument('--expand_k',type=int,default=8)
     parser.add_argument('--batch_size',type=int,default=10)
     parser.add_argument('--dropout_rate',type=float,default=0.8)
     parser.add_argument('--segment_len',type=int,default=16)

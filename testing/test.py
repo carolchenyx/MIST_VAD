@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.extend(['..','../..','../../..'])
 import torch
+
 from configs import constant,options
 import models
 from datasets.dataset import Test_Dataset_C3D,Test_Dataset_I3D,Test_Dataset_SHT_C3D,Test_Dataset_SHT_I3D
@@ -17,6 +18,23 @@ import cv2
 
 _C=constant._C
 
+def load_C3D_SGA_STD_pretrained_model(net, checkpoint_path, name=None):
+    checkpoint = torch.load(checkpoint_path)
+    state_dict = net.state_dict()
+    base_dict = {}
+    checkpoint_keys = checkpoint.get('model').keys()
+    if name == None:
+        for k, v in state_dict.items():
+            for _k in checkpoint_keys:
+                if k in _k:
+                    base_dict[k] = checkpoint.get('model')[_k]
+    # import pdb
+    # pdb.set_trace()
+    state_dict.update(base_dict)
+    print('model load pretrained weights')
+    net.load_state_dict(state_dict)
+
+
 def load_model_dataset(args):
     def worker_init(worked_id):
         np.random.seed(_C.SEED+worked_id)
@@ -26,7 +44,8 @@ def load_model_dataset(args):
     if args.MODEL.split('_')[-1]=='C3D':
         if args.MODEL=='UCF_C3D':
             dataset=Test_Dataset_C3D(_C.TEST_H5_PATH,_C.TESTING_TXT_PATH,args.segment_len,args.ten_crop)
-            model.load_state_dict(torch.load(_C.UCF_C3D_MODEL_PATH)['state_dict'])
+            load_C3D_SGA_STD_pretrained_model(model,_C.UCF_C3D_MODEL_PATH)
+            # model.load_state_dict(torch.load(_C.UCF_C3D_MODEL_PATH)['model'])#['state_dict']
         else:
             dataset=Test_Dataset_SHT_C3D(_C.SHT_TEST_H5_PATH,_C.SHT_TEST_TXT_PATH,_C.SHT_TEST_MASK_DIR,
                                          args.segment_len,args.ten_crop)

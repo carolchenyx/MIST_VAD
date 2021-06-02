@@ -49,15 +49,13 @@ def prepare_dataset(args):
         np.random.seed(CFG.SEED+worked_id)
         random.seed(CFG.SEED+worked_id)
 
-    Pseudo_Labels=CFG.PSEUDO_LABEL_PATH_SHT_I3D,
+    Pseudo_Labels=CFG.PSEUDO_LABEL_PATH_SHT_I3D
 
-    norm_dataset=Train_TemAug_Dataset_SHT_I3D(args.machine+CFG.SHT_TRAIN_H5_PATH,args.machine+CFG.SHT_TRAIN_TXT_PATH,
-                                              args.machine+Pseudo_Labels,args.clip_num,
+    norm_dataset=Train_TemAug_Dataset_SHT_I3D(CFG.SHT_TRAIN_H5_PATH,CFG.SHT_TRAIN_TXT_PATH,Pseudo_Labels,args.clip_num,
                               segment_len=args.segment_len, type='Normal',hard_label=args.use_hard_label,score_segment_len=16,
                                               continuous_sampling=args.use_continuous_sampling)
 
-    abnorm_dataset=Train_TemAug_Dataset_SHT_I3D(args.machine+CFG.SHT_TRAIN_H5_PATH,args.machine+CFG.SHT_TRAIN_TXT_PATH,
-                                                args.machine+Pseudo_Labels,args.clip_num,
+    abnorm_dataset=Train_TemAug_Dataset_SHT_I3D(CFG.SHT_TRAIN_H5_PATH,CFG.SHT_TRAIN_TXT_PATH,Pseudo_Labels,args.clip_num,
                               segment_len=args.segment_len, type='Abnormal',hard_label=args.use_hard_label,score_segment_len=16,
                                                 continuous_sampling=args.use_continuous_sampling)
 
@@ -69,7 +67,7 @@ def prepare_dataset(args):
                                     num_workers=5, worker_init_fn=worker_init,
                                     drop_last=True, )
 
-    test_dataset = Test_Dataset_SHT_I3D(args.machine+CFG.SHT_TEST_H5_PATH, args.machine+CFG.SHT_TEST_TXT_PATH,args.machine+CFG.SHT_TEST_MASK_DIR,
+    test_dataset = Test_Dataset_SHT_I3D(CFG.SHT_TEST_H5_PATH, CFG.SHT_TEST_TXT_PATH,CFG.SHT_TEST_MASK_DIR,
                                         args.segment_len, ten_crop=args.ten_crop)
     test_dataloader = DataLoader(test_dataset, batch_size=42, shuffle=False, num_workers=10,
                                   worker_init_fn=worker_init, drop_last=False, )
@@ -137,21 +135,20 @@ def eval_epoch(args,model,test_dataloader,logger):
 def dir_prepare(args):
     CFG=constant._C
     get_timestamp()
-    logger_dir=args.machine+CFG.LOG_DIR+'{}_{}/'.format(args.MODEL,args.train)
-    mkdir(logger_dir)
+    logger_dir=".."+args.machine+"/"+CFG.LOG_DIR+'{}_{}/'.format(args.MODEL,args.train)
+    os.makedirs(logger_dir,exist_ok=True)
     param_str='SHT_{}_iter_{}_seed_{}_lr_{}_wd_{}_{}'.format(args.train,args.iter,CFG.SEED,args.lr,args.weight_decay,
                                                                           get_timestamp())
     logger_path=logger_dir+'{}.log'.format(param_str)
     logger=get_logger(logger_path)
     logger.info('Train this model at time {}'.format(get_timestamp()))
     log_param(logger, args)
-    summary_dir=args.machine+CFG.SUMMARY_DIR+param_str
-    mkdir(summary_dir)
+    summary_dir=".." + args.machine+"/"+CFG.SUMMARY_DIR+param_str
+    os.makedirs(summary_dir,exist_ok=True)
     summary=SummaryWriter(summary_dir)
-    model_dir=args.machine+CFG.MODEL_DIR+'{}_{}/'.format(args.MODEL,args.train)
-    mkdir(model_dir)
+    model_dir=".."+args.machine+"/"+CFG.MODEL_DIR+'{}_{}/'.format(args.MODEL,args.train)
+    os.makedirs(model_dir,exist_ok=True)
     model_path_pre=model_dir+param_str
-
 
     return logger,summary,model_path_pre
 

@@ -495,14 +495,14 @@ class Train_TemAug_Dataset_SHT_I3D(Dataset):
             key,label=line.strip().split(',')
             if label=='1':
                 for k in self.keys:
-                    if key == k.split('-')[0]:
+                    if key in k.split('-')[0]:
                         if key in self.abnorm_vid_names_dict.keys():
                             self.abnorm_vid_names_dict[key]+=1
                         else:
                             self.abnorm_vid_names_dict[key]=1
             else:
                 for k in self.keys:
-                    if key == k.split('-')[0]:
+                    if key in k.split('-')[0]:
                         if key in self.norm_vid_names_dict.keys():
                             self.norm_vid_names_dict[key]+=1
                         else:
