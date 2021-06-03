@@ -104,14 +104,14 @@ class Test_Dataset_I3D(Dataset):
             new_frames.append(cv2.cvtColor(cv2.imdecode(np.frombuffer(frame, np.uint8), cv2.IMREAD_COLOR),cv2.COLOR_BGR2RGB))
 
         # new_frames=torch.from_numpy(new_frames).float().permute([3,0,1,2])
-        # new_frames = self.transforms(new_frames)
-        # return new_frames
-        if not self.ten_crop:
-            new_frames = self.transforms(new_frames)
-        else:
-            new_frames=self.ten_crop_aug(new_frames)
-            new_frames=torch.stack(new_frames,dim=0)
+        new_frames = self.transforms(new_frames)
         return new_frames
+        # if not self.ten_crop:
+        #     new_frames = self.transforms(new_frames)
+        # else:
+        #     new_frames=self.ten_crop_aug(new_frames)
+        #     new_frames=torch.stack(new_frames,dim=0)
+        # return new_frames
 
     def __getitem__(self, i):
         key = self.keys[i]

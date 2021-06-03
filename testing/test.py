@@ -2,10 +2,9 @@ import os
 import sys
 sys.path.extend(['..','../..','../../..'])
 import torch
-
 from configs import constant,options
 import models
-from datasets.dataset import Test_Dataset_C3D,Test_Dataset_I3D,Test_Dataset_SHT_C3D,Test_Dataset_SHT_I3D
+from datasets.dataset import Test_Dataset_C3D,Test_Dataset_I3D,Test_Dataset_SHT_C3D,Test_Dataset_SHT_I3D,read_testing_txt
 # from utils.balanced_dataparallel import BalancedDataParallel
 from torch.utils.data import DataLoader
 from utils.eval_utils import cal_auc,cal_score_gap,cal_false_alarm
@@ -66,20 +65,19 @@ def load_model_dataset(args):
 
 def eval_UCF(args,model,test_dataloader):
     total_labels, total_scores= [], []
-
     data_iter=test_dataloader.__iter__()
     next_batch=data_iter.__next__()
     next_batch[0]=next_batch[0].cuda(non_blocking=True)
-    if args.vis:
-        gradcam=GradCAM(model.Regressor,grad_pp=False)
-        test_spatial_annotation = np.load(_C.TEST_SPATIAL_ANNOTATION_PATH, allow_pickle=True).tolist()
-
+    # if args.vis:
+    gradcam=GradCAM(model.Regressor,grad_pp=False)
+    # test_spatial_annotation = np.load(_C.TEST_SPATIAL_ANNOTATION_PATH, allow_pickle=True)
+    test_spatial_annotation = read_testing_txt(_C.TESTING_TXT_PATH)
     for frames,ano_types, keys, idxs,annos in tqdm(test_dataloader):
         frames=frames.float().contiguous().view([-1, 3, frames.shape[-3], frames.shape[-2], frames.shape[-1]]).cuda()
-
         with torch.no_grad():
             scores, feat_maps = model(frames)[:2]
-
+        # cv2.imshow("img", frames[0][0][0].detach().cpu().numpy().astype(np.uint8))
+        # cv2.waitKey(1)
         if args.ten_crop:
             scores = scores.view([-1, 10, 2]).mean(dim=-2)
         for i, (clip, score, ano_type, key, idx, anno, feat_map) in enumerate(
@@ -95,15 +93,15 @@ def eval_UCF(args,model,test_dataloader):
             score = [score] * args.segment_len
             total_scores.extend(score)
             total_labels.extend(anno.tolist())
-
-            if args.vis and ano_type != 'Normal':
-                spa_annos = test_spatial_annotation[key]
-
+            if ano_type != 'Normal':
+                ano_type, anno, frames_num = test_spatial_annotation[key+'.mp4']
                 for f_idx in range(idx * args.segment_len, args.segment_len * (idx + 1)):
-                    if f_idx in spa_annos.keys():
+                    if f_idx in range(anno[0],anno[1]):
                         cam_map = gradcam(feat_map)
-                        cam_path = _C.VIS_DIR+ '/{}-{}.jpg'.format(key, f_idx)
-                        cam_clip = visualize_CAM_with_clip(cam_map, clip, (320, 240))
+                        cam_path = _C.VIS_DIR+ '{}-{}.jpg'.format(key, f_idx)
+                        cam_clip = visualize_CAM_with_clip(cam_map, clip, (640, 480),clip_num=(f_idx-idx * args.segment_len))
+                        cv2.imshow("cam_clip",cam_clip)
+                        cv2.waitKey(1)
                         cv2.imwrite(cam_path, cam_clip)
 
     return eval(total_scores,total_labels)

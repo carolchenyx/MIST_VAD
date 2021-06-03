@@ -63,13 +63,19 @@ def test_CAM():
     cv2.imwrite('./cam.jpg',CAM_map)
 
 
-def visualize_CAM_with_clip(CAM_map,clip,origin_size):
+def visualize_CAM_with_clip(CAM_map,clip,origin_size,clip_num):
     CAM=visualize_CAM(CAM_map,origin_size)
+    # cv2.imshow("CAM",CAM)
+    # cv2.waitKey(1)
     # clip is with shape [C,T,H,W]
     if clip.shape.__len__()==4:
         clip=clip.permute([1,2,3,0])
+
+        # frame = cv2.cvtColor(
+        #     cv2.resize(((clip[clip.shape[0] // 2].detach().cpu().numpy() + 1.0) * 128.0).astype(np.uint8), origin_size),
+        #     cv2.COLOR_BGR2RGB)
         frame = cv2.cvtColor(
-            cv2.resize(((clip[clip.shape[0] // 2].detach().cpu().numpy() + 1.0) * 128.0).astype(np.uint8), origin_size),
+            cv2.resize(clip[clip_num].detach().cpu().numpy().astype(np.uint8), origin_size),
             cv2.COLOR_BGR2RGB)
 
     elif clip.shape.__len__()==3:

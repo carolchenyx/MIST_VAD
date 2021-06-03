@@ -115,11 +115,10 @@ class GradCAM:
             # import pdb
             # pdb.set_trace()
             weights=self.gradients[0].cpu().numpy().mean(axis=(2,3,4)).squeeze()
-
+            weights = np.maximum(weights,0)
             target=feature_maps[0].cpu().numpy()
 
             cam=np.zeros(target.shape[1:])
-            # print(weights)
             for i,w in enumerate(weights):
                 cam+=w*target[i,]
             cam = np.maximum(cam, 0)
