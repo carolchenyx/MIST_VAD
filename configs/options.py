@@ -3,7 +3,7 @@ import os
 
 def parse_args():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--MODEL',type=str,default='SHT_I3D',
+    parser.add_argument('--MODEL',type=str,default='UCF_I3D',
                         help='the input should be in [UCF_C3D,UCF_I3D,SHT_C3D,SHT_I3D]')
     parser.add_argument('--train', type=int, default=8)
     parser.add_argument('--expand_k',type=int,default=8)
@@ -16,8 +16,7 @@ def parse_args():
     parser.add_argument('--test_ten_crop',dest='ten_crop',action='store_true')
     parser.set_defaults(ten_crop=False)
     parser.add_argument('--vis_UCF',dest='vis',action='store_true')
-    parser.add_argument('--vis', default= True, dest='vis', action='store_true')
-    parser.set_defaults(vis=False)
+    parser.set_defaults(vis=True)
 
     args=parser.parse_args()
     os.environ['CUDA_VISIBLE_DEVICES']=args.gpus

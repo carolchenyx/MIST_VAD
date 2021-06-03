@@ -169,7 +169,7 @@ def trainer(args):
     criterion=WCE(weights=args.class_reweights,label_smoothing=args.label_smoothing,eps=1e-8).cuda()
 
     iterator=0
-    AUCs,tious,best_epoch,best_tiou_epoch,best_tiou,best_AUC=[],[],0,0,0,0
+    AUCs,PR_AUCs,tious,best_epoch,best_tiou_epoch,best_tiou,best_AUC=[],[],[],0,0,0,0
     for epoch in range(args.epochs):
         if not args.train_backbone  and epoch==args.freeze_epochs:
             model.module.freeze_backbone=False
@@ -189,9 +189,11 @@ def trainer(args):
         if epoch%10==0:
             for name, param in model.named_parameters():
                 summary.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
-            auc=eval_epoch(args,model,test_dataloader,logger)
+            auc,pr_auc=eval_epoch(args,model,test_dataloader,logger)
             AUCs.append(auc)
+            PR_AUCs.append(pr_auc)
             summary.add_scalar('AUC', auc.item(), epoch)
+            summary.add_scalar('PR_AUCs', pr_auc.item(), epoch)
             if len(AUCs) >= 5:
                 mean_auc = sum(AUCs[-5:]) / 5.
                 if mean_auc > best_AUC:
